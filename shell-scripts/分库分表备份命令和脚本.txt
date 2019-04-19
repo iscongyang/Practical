@@ -1,0 +1,19 @@
+# 命令备份分库分表
+[root@devops opt]# mysql -ucongy -pcongy -e "show databases;"| egrep -v "_schema|Database|sys" | sed -r 's#^(.*)#mysqldump -ucongy -pcongy -B \1|gzip > 5.sql.gz#g' | bash
+# 脚本备份特定库所有表
+[root@test ~]$ cat a.sh 
+#!/bin/bash
+USERNAME=root
+PWD=123
+DBNAME=test
+DBHOST="localhost"
+PORT="3306"
+SOCKET=/usr/local/platform/mysql/mysql_data/mysql.sock
+MYSQL=/usr/local/platform/mysql/mysql5.7/bin/mysql
+MYSQLDUMP=/usr/local/platform/mysql/mysql5.7/bin/mysqldump
+res=`$MYSQL -h${DBHOST} -P${PORT} -u${USERNAME} -p${PWD} --socket=$SOCKET -e 'select TABLE_NAME from information_schema.tables where TABLE_SCHEMA="chengquan"'|grep -v "TABLE_NAME" | xargs`
+for i in ${res}
+do
+    $MYSQLDUMP -h${DBHOST} -P${PORT} -u${USERNAME} -p${PWD} --socket=$SOCKET --single-transaction --set-gtid-purged=OFF -c --skip-extended-insert -t ${DBNAME} $i > /home/congy/backsql/$i.sql
+    #echo $i
+done
