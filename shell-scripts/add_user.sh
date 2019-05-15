@@ -7,7 +7,7 @@ KEYS="...."
 
 function tailer() {
     usermod -a -G tomcat ${USER}
-    echo "123456Qq!" | passwd --stdin ${USER}
+    echo "iscongyang" | passwd --stdin ${USER}
     temp3=`id ${USER} | grep tomcat | wc -l`
     if [ ${temp3} = 1 ] ;then
         echo "tomcat权限添加成功"
